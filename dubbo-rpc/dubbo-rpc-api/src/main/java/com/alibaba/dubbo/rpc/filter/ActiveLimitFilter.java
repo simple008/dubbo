@@ -51,6 +51,7 @@ public class ActiveLimitFilter implements Filter {
                         } catch (InterruptedException e) {
                         }
                         long elapsed = System.currentTimeMillis() - start;
+                        // 两种情况回到这里，1. 等待了timeout的超时时间  2.被其他线程notify唤醒，所以需要判断是否是超时
                         remain = timeout - elapsed;
                         if (remain <= 0) {
                             throw new RpcException("Waiting concurrent invoke timeout in client-side for service:  "

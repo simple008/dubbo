@@ -23,6 +23,9 @@ import com.alibaba.dubbo.rpc.Invocation;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+/**
+ * 令牌桶计数器
+ */
 public class DefaultTPSLimiter implements TPSLimiter {
 
     private final ConcurrentMap<String, StatItem> stats
@@ -30,6 +33,7 @@ public class DefaultTPSLimiter implements TPSLimiter {
 
     @Override
     public boolean isAllowable(URL url, Invocation invocation) {
+        // rate：限流值
         int rate = url.getParameter(Constants.TPS_LIMIT_RATE_KEY, -1);
         long interval = url.getParameter(Constants.TPS_LIMIT_INTERVAL_KEY,
                 Constants.DEFAULT_TPS_LIMIT_INTERVAL);
