@@ -60,6 +60,7 @@ public class ExceptionFilter implements Filter {
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         try {
             Result result = invoker.invoke(invocation);
+            // 不是泛化调用的才会处理
             if (result.hasException() && GenericService.class != invoker.getInterface()) {
                 try {
                     Throwable exception = result.getException();
@@ -71,6 +72,7 @@ public class ExceptionFilter implements Filter {
                     // directly throw if the exception appears in the signature
                     try {
                         Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                        // 这个方法可以throw 的异常类型
                         Class<?>[] exceptionClassses = method.getExceptionTypes();
                         for (Class<?> exceptionClass : exceptionClassses) {
                             if (exception.getClass().equals(exceptionClass)) {

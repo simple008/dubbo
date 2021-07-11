@@ -78,7 +78,7 @@ public class RpcStatus {
         SERVICE_STATISTICS.remove(uri);
     }
 
-    /**
+    /** 接口+方法的限流状态
      * @param url
      * @param methodName
      * @return status

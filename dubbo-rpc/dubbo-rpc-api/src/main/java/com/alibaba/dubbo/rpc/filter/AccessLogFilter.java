@@ -76,7 +76,8 @@ public class AccessLogFilter implements Filter {
 
     private final ConcurrentMap<String, Set<String>> logQueue = new ConcurrentHashMap<String, Set<String>>();
 
-    private final ScheduledExecutorService logScheduled = Executors.newScheduledThreadPool(2, new NamedThreadFactory("Dubbo-Access-Log", true));
+    private final ScheduledExecutorService logScheduled =
+            Executors.newScheduledThreadPool(2, new NamedThreadFactory("Dubbo-Access-Log", true));
 
     private volatile ScheduledFuture<?> logFuture = null;
 
@@ -105,10 +106,12 @@ public class AccessLogFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation inv) throws RpcException {
         try {
+            // 在配置文件中配置了accessLog 就会激活下面的if流程
             String accesslog = invoker.getUrl().getParameter(Constants.ACCESS_LOG_KEY);
             if (ConfigUtils.isNotEmpty(accesslog)) {
                 RpcContext context = RpcContext.getContext();
                 String serviceName = invoker.getInterface().getName();
+                // version、group等都在附加字段中
                 String version = invoker.getUrl().getParameter(Constants.VERSION_KEY);
                 String group = invoker.getUrl().getParameter(Constants.GROUP_KEY);
                 StringBuilder sn = new StringBuilder();
@@ -142,6 +145,7 @@ public class AccessLogFilter implements Filter {
                 if (args != null && args.length > 0) {
                     sn.append(JSON.toJSONString(args));
                 }
+                // 搞了上面那一堆就是在拼接日志，没辙这就是个日志的过滤器..
                 String msg = sn.toString();
                 if (ConfigUtils.isDefault(accesslog)) {
                     LoggerFactory.getLogger(ACCESS_LOG_KEY + "." + invoker.getInterface().getName()).info(msg);
