@@ -70,6 +70,8 @@ public abstract class AbstractRegistry implements Registry {
     private final AtomicLong lastCacheChanged = new AtomicLong();
     private final Set<URL> registered = new ConcurrentHashSet<URL>();
     private final ConcurrentMap<URL, Set<NotifyListener>> subscribed = new ConcurrentHashMap<URL, Set<NotifyListener>>();
+
+    // 内存中间服务缓存对象
     private final ConcurrentMap<URL, Map<String, List<URL>>> notified = new ConcurrentHashMap<URL, Map<String, List<URL>>>();
     private URL registryUrl;
     // Local disk cache file
@@ -189,7 +191,7 @@ public abstract class AbstractRegistry implements Registry {
             logger.warn("Failed to save registry store file, cause: " + e.getMessage(), e);
         }
     }
-
+    // 加载数据
     private void loadProperties() {
         if (file != null && file.exists()) {
             InputStream in = null;
@@ -435,6 +437,7 @@ public abstract class AbstractRegistry implements Registry {
             }
             properties.setProperty(url.getServiceKey(), buf.toString());
             long version = lastCacheChanged.incrementAndGet();
+            // cache refresh
             if (syncSaveFile) {
                 doSaveProperties(version);
             } else {
